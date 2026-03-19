@@ -98,7 +98,7 @@ export default function About() {
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
-                  objectPosition: 'center top',
+                  objectPosition: 'center 12%',
                   filter: 'contrast(1.1) saturate(0.9)',
                 }}
               />
@@ -230,7 +230,7 @@ export default function About() {
               Kings Engineering College · Anna University
             </p>
             <p className="font-mono" style={{ fontSize: '11px', color: 'rgba(245,237,224,0.4)' }}>
-              2019 – 2023 · GPA 76%
+              2019 – 2023 · GPA 7.6/10
             </p>
           </div>
 
