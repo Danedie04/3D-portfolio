@@ -188,112 +188,94 @@ function createFrontTexture() {
   return new THREE.CanvasTexture(canvas)
 }
 
-// Back face — QR + skills (no async needed, QR via separate mesh)
+// Back face — clean minimal: large QR dominant, only essential text
 function createBackTexture() {
   const canvas = document.createElement('canvas')
   canvas.width = 512
   canvas.height = 720
   const ctx = canvas.getContext('2d')
 
-  // Background
-  const bg = ctx.createLinearGradient(0, 0, 512, 720)
-  bg.addColorStop(0, '#0c1220')
-  bg.addColorStop(1, '#111827')
-  ctx.fillStyle = bg
+  // Pure dark background
+  ctx.fillStyle = '#080d18'
   ctx.fillRect(0, 0, 512, 720)
 
-  // Top accent
-  const accentGrad = ctx.createLinearGradient(0, 0, 512, 0)
-  accentGrad.addColorStop(0, '#e8692a')
-  accentGrad.addColorStop(1, 'rgba(232,105,42,0)')
-  ctx.fillStyle = accentGrad
-  ctx.fillRect(0, 0, 512, 5)
+  // Subtle radial glow behind QR area (centre of card)
+  const glow = ctx.createRadialGradient(256, 360, 0, 256, 360, 260)
+  glow.addColorStop(0, 'rgba(232,105,42,0.07)')
+  glow.addColorStop(1, 'rgba(232,105,42,0)')
+  ctx.fillStyle = glow
+  ctx.fillRect(0, 0, 512, 720)
 
-  // Right accent strip (mirrored on back)
-  const rightStrip = ctx.createLinearGradient(0, 0, 0, 720)
-  rightStrip.addColorStop(0, '#e8692a')
-  rightStrip.addColorStop(1, 'rgba(232,105,42,0)')
-  ctx.fillStyle = rightStrip
-  ctx.fillRect(509, 0, 3, 720)
-
-  // Title
+  // Top orange bar
   ctx.fillStyle = '#e8692a'
-  ctx.font = "600 22px Georgia, serif"
-  ctx.textAlign = 'center'
-  ctx.fillText('SKILLS & STACK', 256, 52)
+  ctx.fillRect(0, 0, 512, 4)
 
-  ctx.strokeStyle = 'rgba(232,105,42,0.35)'
+  // Bottom orange bar
+  ctx.fillStyle = '#e8692a'
+  ctx.fillRect(0, 716, 512, 4)
+
+  // ── TOP TEXT: "SCAN TO HIRE ME" ──
+  ctx.fillStyle = '#e8692a'
+  ctx.font = 'bold 15px monospace'
+  ctx.textAlign = 'center'
+  ctx.letterSpacing = '0.3em'
+  ctx.fillText('SCAN TO HIRE ME', 256, 60)
+
+  // Small line under heading
+  ctx.strokeStyle = 'rgba(232,105,42,0.4)'
   ctx.lineWidth = 1
   ctx.beginPath()
-  ctx.moveTo(140, 65)
-  ctx.lineTo(372, 65)
+  ctx.moveTo(176, 74)
+  ctx.lineTo(336, 74)
   ctx.stroke()
 
-  // Skills
-  const skills = [
-    { label: 'React / Three.js / R3F', pct: 90 },
-    { label: 'JavaScript / TypeScript', pct: 88 },
-    { label: 'Node.js / Python', pct: 82 },
-    { label: 'SQL / PostgreSQL', pct: 78 },
-    { label: 'Cloud (GCP / AWS)', pct: 70 },
-    { label: 'Machine Learning', pct: 65 },
-  ]
-
-  skills.forEach((s, i) => {
-    const y = 100 + i * 58
-    ctx.textAlign = 'left'
-    ctx.fillStyle = 'rgba(245,237,224,0.85)'
-    ctx.font = '11.5px monospace'
-    ctx.fillText(s.label, 32, y)
-
-    // Track
-    ctx.fillStyle = 'rgba(245,237,224,0.07)'
-    ctx.fillRect(32, y + 8, 448, 3)
-
-    // Fill
-    const barGrad = ctx.createLinearGradient(32, 0, 32 + 448 * s.pct / 100, 0)
-    barGrad.addColorStop(0, '#e8692a')
-    barGrad.addColorStop(1, 'rgba(232,105,42,0.25)')
-    ctx.fillStyle = barGrad
-    ctx.fillRect(32, y + 8, 448 * s.pct / 100, 3)
-
-    ctx.textAlign = 'right'
-    ctx.fillStyle = '#e8692a'
-    ctx.font = '10px monospace'
-    ctx.fillText(`${s.pct}%`, 480, y)
-  })
-
-  // Separator
-  ctx.fillStyle = 'rgba(245,237,224,0.06)'
-  ctx.fillRect(32, 462, 448, 1)
-
-  // QR section label
-  ctx.fillStyle = '#e8692a'
-  ctx.font = '10px monospace'
-  ctx.textAlign = 'center'
-  ctx.fillText('▼  SCAN TO HIRE ME  ▼', 256, 488)
-
-  // QR placeholder box (actual QR image rendered as separate mesh)
-  ctx.fillStyle = 'rgba(255,255,255,0.04)'
+  // ── QR PLACEHOLDER BOX (QR image rendered as separate mesh on top) ──
+  // Large white-ish bg so QR is scannable when mesh is placed over it
+  const qrPad = 12
+  const qrLeft = 76
+  const qrTop = 100
+  const qrBoxSize = 360
+  ctx.fillStyle = '#ffffff'
   ctx.beginPath()
-  ctx.roundRect(186, 500, 140, 140, 8)
+  ctx.roundRect(qrLeft - qrPad, qrTop - qrPad, qrBoxSize + qrPad * 2, qrBoxSize + qrPad * 2, 12)
   ctx.fill()
-  ctx.strokeStyle = 'rgba(232,105,42,0.4)'
-  ctx.lineWidth = 1.5
+
+  // Orange border around QR box
+  ctx.strokeStyle = '#e8692a'
+  ctx.lineWidth = 3
   ctx.beginPath()
-  ctx.roundRect(186, 500, 140, 140, 8)
+  ctx.roundRect(qrLeft - qrPad, qrTop - qrPad, qrBoxSize + qrPad * 2, qrBoxSize + qrPad * 2, 12)
   ctx.stroke()
 
-  // LinkedIn URL below QR
-  ctx.fillStyle = 'rgba(245,237,224,0.4)'
-  ctx.font = '8px monospace'
+  // ── BOTTOM TEXT ──
+  // Name
+  ctx.fillStyle = 'rgba(245,237,224,0.9)'
+  ctx.font = "600 20px Georgia, serif"
   ctx.textAlign = 'center'
-  ctx.fillText('linkedin.com/in/dinesh-kumar-429968200', 256, 658)
+  ctx.fillText('Dinesh Kumar', 256, 510)
 
-  // Bottom line
-  ctx.fillStyle = 'rgba(245,237,224,0.18)'
+  // Role
+  ctx.fillStyle = '#e8692a'
+  ctx.font = '11px monospace'
+  ctx.fillText('WEB DEVELOPER & DESIGNER', 256, 534)
+
+  // LinkedIn URL
+  ctx.fillStyle = 'rgba(245,237,224,0.38)'
   ctx.font = '9px monospace'
-  ctx.fillText('◀  DOUBLE-CLICK TO FLIP BACK  ▶', 256, 695)
+  ctx.fillText('linkedin.com/in/dinesh-kumar-429968200', 256, 558)
+
+  // Thin separator
+  ctx.strokeStyle = 'rgba(232,105,42,0.15)'
+  ctx.lineWidth = 1
+  ctx.beginPath()
+  ctx.moveTo(80, 575)
+  ctx.lineTo(432, 575)
+  ctx.stroke()
+
+  // Flip hint
+  ctx.fillStyle = 'rgba(245,237,224,0.2)'
+  ctx.font = '9px monospace'
+  ctx.fillText('◀  DOUBLE-CLICK TO FLIP BACK  ▶', 256, 600)
 
   return new THREE.CanvasTexture(canvas)
 }
@@ -312,20 +294,21 @@ function IDCard({ flipped }) {
     }
   })
 
-  // Card aspect ratio: 512 wide x 720 tall → 1.0 x 1.40625
-  // We use scale 2.25 from parent, card dims 1.6 x 2.25 units
-  // Photo circle: center at y=210/720 → offset from card center
-  // Card height = 2.25 units. center offset = (0.5 - 210/720) * 2.25 = 0.527
-  // Photo radius = 95/720 * 2.25 = 0.297 units
+  // Card dimensions
   const cardW = 1.6
   const cardH = 2.25
-  const photoY = cardH * (0.5 - 210 / 720)     // +0.53 from center
-  const photoR = 95 / 720 * cardH               // 0.297
 
-  // QR on back face: center at y=570/720, x=256/512
-  // In card coords: x=0 (center), y = (0.5 - 570/720)*cardH = -0.654
-  const qrY = cardH * (0.5 - 570 / 720)
-  const qrSize = 140 / 720 * cardH              // 0.438
+  // Photo: center at canvas y=210, radius=95 → card coords
+  const photoY = cardH * (0.5 - 210 / 720)
+  const photoR = 95 / 720 * cardH
+
+  // QR: box starts at canvas y=100, size=360, center y=280 → card coords
+  // canvas center y = 100 + 360/2 = 280
+  // card coord y = (0.5 - 280/720) * 2.25 = 0.25*(720-560)/720*2.25
+  const qrCenterCanvasY = 100 + 360 / 2   // 280
+  const qrY = cardH * (0.5 - qrCenterCanvasY / 720)  // ~+0.250
+  // QR size in card units: 360/720 * 2.25 = 1.125, but keep slight inset from border
+  const qrSize = (360 / 720) * cardH * 0.92  // ~1.035
 
   return (
     <group ref={meshRef} scale={2.25} position={[0, -1.2, -0.05]}>
