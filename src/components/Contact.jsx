@@ -215,13 +215,22 @@ export default function Contact() {
           © 2026 DINESH KUMAR · DIGITAL EXPERIENCE CREATOR
         </span>
         <a
-          href="https://my-3d-portfolio-sooty.vercel.app/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-mono"
-          style={{ fontSize: '10px', color: 'var(--orange)', letterSpacing: '0.2em', textDecoration: 'none' }}
+          href="/DINESH_KUMAR_Resume.pdf"
+          download="DINESH_KUMAR_Resume.pdf"
+          className="font-mono flex items-center gap-2 transition-all duration-300"
+          style={{
+            fontSize: '10px',
+            color: '#0a0f1e',
+            letterSpacing: '0.2em',
+            textDecoration: 'none',
+            background: 'var(--orange)',
+            padding: '8px 18px',
+            fontWeight: '600',
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = '#c4521a'}
+          onMouseLeave={e => e.currentTarget.style.background = 'var(--orange)'}
         >
-          LIVE PORTFOLIO ↗
+          ↓ DOWNLOAD RESUME
         </a>
       </div>
     </section>
