@@ -3,11 +3,11 @@ import { useEffect, useRef } from 'react'
 const projects = [
   {
     num: '01',
-    title: 'Health Habit Tracker',
+    title: 'SATTVA APP',
     desc: 'A full-stack wellness app for tracking daily habits, nutrition, and fitness goals with real-time analytics and AI-powered insights.',
     tags: ['React', 'Node.js', 'PostgreSQL', 'Chart.js'],
     gradient: 'linear-gradient(135deg, rgba(232,105,42,0.15) 0%, rgba(10,15,30,0) 60%)',
-    href: '#',
+    href: 'https://github.com/Danedie04/Sattva-app',
   },
   {
     num: '02',
@@ -15,7 +15,7 @@ const projects = [
     desc: 'Smart content scheduling tool for creators with drag-and-drop interface, multi-platform publishing, and engagement analytics.',
     tags: ['React', 'Firebase', 'GSAP', 'Tailwind'],
     gradient: 'linear-gradient(135deg, rgba(30,58,95,0.3) 0%, rgba(10,15,30,0) 60%)',
-    href: '#',
+    href: 'https://github.com/Danedie04/clip-chronicle',
   },
   {
     num: '03',
@@ -23,7 +23,7 @@ const projects = [
     desc: 'Real-time AI-powered photo transformation experience with cinematic filters, style transfer, and instant social sharing.',
     tags: ['Python', 'React', 'TensorFlow', 'WebGL'],
     gradient: 'linear-gradient(135deg, rgba(232,105,42,0.1) 0%, rgba(30,58,95,0.2) 100%)',
-    href: '#',
+    href: 'https://github.com/Danedie04/Sketch-PhotoBooth-Studio',
   },
   {
     num: '04',
@@ -31,7 +31,7 @@ const projects = [
     desc: 'Immersive cinematic portfolio experience featuring Three.js, Rapier physics, and GSAP animations for a next-level digital identity.',
     tags: ['Three.js', 'R3F', 'Rapier', 'GSAP'],
     gradient: 'linear-gradient(135deg, rgba(232,105,42,0.2) 0%, rgba(10,15,30,0) 60%)',
-    href: 'https://my-3d-portfolio-sooty.vercel.app/',
+    href: 'https://github.com/Danedie04/3D-portfolio',
   },
 ]
 
