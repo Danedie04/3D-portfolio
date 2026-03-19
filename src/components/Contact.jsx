@@ -212,7 +212,7 @@ export default function Contact() {
           DK<span style={{ color: 'var(--orange)' }}>.</span>
         </span>
         <span className="font-mono" style={{ fontSize: '10px', color: 'rgba(245,237,224,0.25)', letterSpacing: '0.2em' }}>
-          © 2025 DINESH KUMAR · DIGITAL EXPERIENCE CREATOR
+          © 2026 DINESH KUMAR · DIGITAL EXPERIENCE CREATOR
         </span>
         <a
           href="https://my-3d-portfolio-sooty.vercel.app/"
