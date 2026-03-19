@@ -211,94 +211,16 @@ function createFrontTexture() {
   return new THREE.CanvasTexture(canvas)
 }
 
-// Back face — clean minimal: large QR dominant, only essential text
+// Back face — pure black canvas, QR mesh covers the full face
 function createBackTexture() {
   const canvas = document.createElement('canvas')
   canvas.width = 512
   canvas.height = 720
   const ctx = canvas.getContext('2d')
 
-  // Pure dark background
-  ctx.fillStyle = '#080d18'
+  // Pure black
+  ctx.fillStyle = '#000000'
   ctx.fillRect(0, 0, 512, 720)
-
-  // Subtle radial glow behind QR area (centre of card)
-  const glow = ctx.createRadialGradient(256, 360, 0, 256, 360, 260)
-  glow.addColorStop(0, 'rgba(232,105,42,0.07)')
-  glow.addColorStop(1, 'rgba(232,105,42,0)')
-  ctx.fillStyle = glow
-  ctx.fillRect(0, 0, 512, 720)
-
-  // Top orange bar
-  ctx.fillStyle = '#e8692a'
-  ctx.fillRect(0, 0, 512, 4)
-
-  // Bottom orange bar
-  ctx.fillStyle = '#e8692a'
-  ctx.fillRect(0, 716, 512, 4)
-
-  // ── TOP TEXT: "SCAN TO HIRE ME" ──
-  ctx.fillStyle = '#e8692a'
-  ctx.font = 'bold 15px monospace'
-  ctx.textAlign = 'center'
-  ctx.letterSpacing = '0.3em'
-  ctx.fillText('SCAN TO HIRE ME', 256, 60)
-
-  // Small line under heading
-  ctx.strokeStyle = 'rgba(232,105,42,0.4)'
-  ctx.lineWidth = 1
-  ctx.beginPath()
-  ctx.moveTo(176, 74)
-  ctx.lineTo(336, 74)
-  ctx.stroke()
-
-  // ── QR PLACEHOLDER BOX (QR image rendered as separate mesh on top) ──
-  // Large white-ish bg so QR is scannable when mesh is placed over it
-  const qrPad = 12
-  const qrLeft = 76
-  const qrTop = 100
-  const qrBoxSize = 360
-  ctx.fillStyle = '#ffffff'
-  ctx.beginPath()
-  ctx.roundRect(qrLeft - qrPad, qrTop - qrPad, qrBoxSize + qrPad * 2, qrBoxSize + qrPad * 2, 12)
-  ctx.fill()
-
-  // Orange border around QR box
-  ctx.strokeStyle = '#e8692a'
-  ctx.lineWidth = 3
-  ctx.beginPath()
-  ctx.roundRect(qrLeft - qrPad, qrTop - qrPad, qrBoxSize + qrPad * 2, qrBoxSize + qrPad * 2, 12)
-  ctx.stroke()
-
-  // ── BOTTOM TEXT ──
-  // Name
-  ctx.fillStyle = 'rgba(245,237,224,0.9)'
-  ctx.font = "600 20px Georgia, serif"
-  ctx.textAlign = 'center'
-  ctx.fillText('Dinesh Kumar', 256, 510)
-
-  // Role
-  ctx.fillStyle = '#e8692a'
-  ctx.font = '11px monospace'
-  ctx.fillText('WEB DEVELOPER & DESIGNER', 256, 534)
-
-  // LinkedIn URL
-  ctx.fillStyle = 'rgba(245,237,224,0.38)'
-  ctx.font = '9px monospace'
-  ctx.fillText('linkedin.com/in/dinesh-kumar-429968200', 256, 558)
-
-  // Thin separator
-  ctx.strokeStyle = 'rgba(232,105,42,0.15)'
-  ctx.lineWidth = 1
-  ctx.beginPath()
-  ctx.moveTo(80, 575)
-  ctx.lineTo(432, 575)
-  ctx.stroke()
-
-  // Flip hint
-  ctx.fillStyle = 'rgba(245,237,224,0.2)'
-  ctx.font = '9px monospace'
-  ctx.fillText('◀  DOUBLE-CLICK TO FLIP BACK  ▶', 256, 600)
 
   return new THREE.CanvasTexture(canvas)
 }
@@ -325,13 +247,9 @@ function IDCard({ flipped }) {
   const photoY = cardH * (0.5 - 210 / 720)
   const photoR = 95 / 720 * cardH
 
-  // QR: box starts at canvas y=100, size=360, center y=280 → card coords
-  // canvas center y = 100 + 360/2 = 280
-  // card coord y = (0.5 - 280/720) * 2.25 = 0.25*(720-560)/720*2.25
-  const qrCenterCanvasY = 100 + 360 / 2   // 280
-  const qrY = cardH * (0.5 - qrCenterCanvasY / 720)  // ~+0.250
-  // QR size in card units: 360/720 * 2.25 = 1.125, but keep slight inset from border
-  const qrSize = (360 / 720) * cardH * 0.92  // ~1.035
+  // QR covers full card back — inset 8% on each side for border breathing room
+  const qrSize = cardW * 0.84   // slightly inset from card edges
+  const qrY = 0                 // dead center of card
 
   return (
     <group ref={meshRef} scale={2.25} position={[0, -1.2, -0.05]}>
@@ -367,8 +285,14 @@ function IDCard({ flipped }) {
         <meshBasicMaterial map={portraitTex} />
       </mesh>
 
-      {/* QR code — square plane on back face */}
-      <mesh position={[0, qrY, -0.011]} rotation={[0, Math.PI, 0]}>
+      {/* Back face: white background plane so QR is scannable */}
+      <mesh position={[0, 0, -0.012]} rotation={[0, Math.PI, 0]}>
+        <planeGeometry args={[cardW * 0.88, cardW * 0.88]} />
+        <meshBasicMaterial color="#ffffff" />
+      </mesh>
+
+      {/* QR code — covers the white plane, centered on back */}
+      <mesh position={[0, 0, -0.013]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[qrSize, qrSize]} />
         <meshBasicMaterial map={qrTex} transparent={false} />
       </mesh>
@@ -411,10 +335,10 @@ export default function ElasticCard({ maxSpeed = 50, minSpeed = 10 }) {
   const [dragged, drag] = useState(false)
   const [hovered, hover] = useState(false)
 
-  useRopeJoint(fixed, j1, [[0, 0, 0], [0, 0, 0], 1])
-  useRopeJoint(j1, j2, [[0, 0, 0], [0, 0, 0], 1])
-  useRopeJoint(j2, j3, [[0, 0, 0], [0, 0, 0], 1])
-  useSphericalJoint(j3, card, [[0, 0, 0], [0, 1.45, 0]])
+  useRopeJoint(fixed, j1, [[0, 0, 0], [0, 0, 0], 0.8])
+  useRopeJoint(j1, j2, [[0, 0, 0], [0, 0, 0], 0.8])
+  useRopeJoint(j2, j3, [[0, 0, 0], [0, 0, 0], 0.8])
+  useSphericalJoint(j3, card, [[0, 0, 0], [0, 1.2, 0]])
 
   useEffect(() => {
     if (hovered) {
@@ -485,19 +409,19 @@ export default function ElasticCard({ maxSpeed = 50, minSpeed = 10 }) {
 
   return (
     <>
-      <group position={[0, 4, 0]}>
+      <group position={[0, 3, 0]}>
         <RigidBody ref={fixed} {...segmentProps} type="fixed" />
-        <RigidBody position={[0.5, 0, 0]} ref={j1} {...segmentProps}>
+        <RigidBody position={[0.4, 0, 0]} ref={j1} {...segmentProps}>
           <BallCollider args={[0.1]} />
         </RigidBody>
-        <RigidBody position={[1, 0, 0]} ref={j2} {...segmentProps}>
+        <RigidBody position={[0.8, 0, 0]} ref={j2} {...segmentProps}>
           <BallCollider args={[0.1]} />
         </RigidBody>
-        <RigidBody position={[1.5, 0, 0]} ref={j3} {...segmentProps}>
+        <RigidBody position={[1.2, 0, 0]} ref={j3} {...segmentProps}>
           <BallCollider args={[0.1]} />
         </RigidBody>
         <RigidBody
-          position={[2, 0, 0]}
+          position={[1.6, 0, 0]}
           ref={card}
           {...segmentProps}
           type={dragged ? 'kinematicPosition' : 'dynamic'}
