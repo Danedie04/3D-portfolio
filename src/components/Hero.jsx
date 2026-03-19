@@ -124,7 +124,7 @@ export default function Hero() {
       >
         <div className="mb-4">
           <span className="font-mono" style={{ fontSize: '10px', color: 'var(--orange)', letterSpacing: '0.35em' }}>
-            ◆ PORTFOLIO 2025
+            ◆ PORTFOLIO 2026
           </span>
         </div>
 
@@ -153,7 +153,7 @@ export default function Hero() {
           color: 'rgba(245,237,224,0.72)',
           fontStyle: 'italic',
         }}>
-          Web Developer &amp; Designer
+          Software Developer &amp; Creative Designer
         </p>
 
         <p className="font-mono mt-1" style={{
