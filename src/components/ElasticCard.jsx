@@ -9,12 +9,35 @@ import { linkedinQR } from '../assets/linkedinQR.js'
 
 extend({ MeshLineGeometry, MeshLineMaterial })
 
-// Load the portrait texture once
+// Load portrait, crop to a face-centered square, return as CanvasTexture
 let portraitTexture = null
 function getPortraitTexture() {
-  if (!portraitTexture) {
-    portraitTexture = new THREE.TextureLoader().load(portraitBase64)
+  if (portraitTexture) return portraitTexture
+
+  const size = 512
+  const canvas = document.createElement('canvas')
+  canvas.width = size
+  canvas.height = size
+  const ctx = canvas.getContext('2d')
+
+  // Fill dark fallback while loading
+  ctx.fillStyle = '#1e3a5f'
+  ctx.fillRect(0, 0, size, size)
+
+  const img = new window.Image()
+  img.onload = () => {
+    const srcW = img.naturalWidth
+    const srcH = img.naturalHeight
+    // Square crop = full width. Face sits in top ~60% — shift down ~6% to center it nicely
+    const cropSize = srcW
+    const offsetY = srcH * 0.06
+    ctx.clearRect(0, 0, size, size)
+    ctx.drawImage(img, 0, offsetY, cropSize, cropSize, 0, 0, size, size)
+    if (portraitTexture) portraitTexture.needsUpdate = true
   }
+  img.src = portraitBase64
+
+  portraitTexture = new THREE.CanvasTexture(canvas)
   return portraitTexture
 }
 
